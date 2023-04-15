@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <style>
+        #container{display: flex;flex-wrap: wrap;}
+        .card {
+            border: 1px solid black;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .card img{
+            width: 100%;
+        }
+        #LolImage{width: 100%;}
+
+        .headshot {
+            overflow: hidden;
+        }
+
+        .card-title {
+            color: white;
+            background-color: black;
+            display: inline-block;
+            border-radius: 5px;
+            padding: 5px 15px 5px 15px;
+            width: 100%;
+        }
+
+        .card-body {
+            background-color: #ffbf67;
+        }
+
+        .card:hover {
+            box-shadow: 8px 8px 15px #808080;
+            transform: translate(5px, 5px);
+        }
+
+        .card:hover img {
+            transform: scale(1.2);
+            transition: transform 0.5s;
+        }
+
+        .card:not(:hover) img {
+            transform: scale(1, 1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover .card-body {
+            background-color: lightgreen !important;
+        }
+
+        .card:hover .card-title {
+            color: black;
+            background-color: white !important;
+        }
+        .imge{
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .modal-header{
+            background-color: #007bff;
+        }
+        .modal-text{
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+            font-size: 20px;
+        }
+        video{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div id="container"></div>
+    </div>
+    <template id="cradLol">
+        <div class="card" style="width: 21rem;margin: 20px;">
+            <img src="..." class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Card title</h5>
+                <p class="card-text">...</p>
+                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">詳細</a>
+                <a href="#" class="btn1 btn btn-danger" data-toggle="modal" data-target="#videoModal">影片</a>
+            </div>
+        </div>
+    </template>
+    <!-- Modal -->
+    <!-- 詳細modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <img id="LolImage">
+                <div class="modal-text">
+                    <label id="hp" class="text-monospace"></label>
+                    <label id="movespeed" class="text-monospace"></label>
+                    <label id="armor" class="text-monospace"></label>
+                    <label id="spellblock" class="text-monospace"></label>
+                    <label id="attackrange" class="text-monospace"></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!-- 影片modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                                <!-- 自動 重播 -->
+                <video src="..." autoplay loop></video>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+    <script>
+        let champion = {};
+        let heroObject = {}, heroArray = [];
+        let heroDataArray = [];
+        let allCardString="";
+        let container, cardTemplate;
+        const url = "https://ddragon.leagueoflegends.com/cdn/10.22.1/data/zh_TW/champion.json";
+        const url404 = "https://ddragon.leagueoflegends.com/cdn/10.22/data/zh_TW/champion.json";
+    </script>
+    <script type="module">
+        import {$g} from '/Module/helpers.js';
+        container = $g('#container');
+        cardTemplate = $g("#cradLol");
+
+        window.onload=function(){
+            // fetchData();
+            fetchJson(url);
+        }
+
+        //未接收參數
+        function fetchData(){
+            fetch(url)
+                .then(response=>response.text())
+                .then(result=>{
+                    document.getElementById("container").innerText = result;
+                });
+        }
+        function fetchJson(uri){
+            fetch(uri)
+                .then(function(response){
+                    if(!response.ok){
+                        const err = new Error(`找不到資源檔 : ${uri}`);
+                        err.response = response;
+                        throw err;
+                    }else{
+                        return response.json();
+                    }
+                })
+                .then(result=>{
+                    // document.getElementById("container").innerText = result;
+                    champion = result;
+                    
+                    heroObject = champion.data;
+
+                    heroArray = Object.keys(heroObject);
+                    let valueArray = Object.values(heroObject);
+
+                    // console.log(heroArray);
+                    // console.log(valueArray);
+                    heroArray.forEach((heroName, index)=>{
+                        let hero = heroObject[heroName];
+                        console.log(`${index}. ${hero.id}, ${hero.blurb}, ${hero.stats.hp}, ${hero.stats.movespeed}, ${hero.stats.spellblock}, ${hero.stats.attackrange}`);
+
+                        heroDataArray.push({
+                            id : hero.id,
+                            key : hero.key,
+                            blurb : hero.blurb,
+                            hp : hero.stats.hp,
+                            movespeed : hero.stats.movespeed,
+                            armor : hero.stats.armor,
+                            spellblock : hero.stats.spellblock,
+                            attackrange : hero.stats.attackrange
+                        });
+                        
+                    });
+
+                    console.log('-'.repeat(80));
+                    valueArray.forEach((hero, index)=>{
+                        //物件解構
+                        let { id, key, name, blurb, stats: { hp}, stats: { movespeed}, stats: {armor}, stats: { spellblock}, stats: { attackrange}} = hero;
+                        let statsKey = Object.keys(hero.stats);
+                        // console.log(statsKey);
+                        // document.body.append(`${index}. ${id}, ${hp}, ${movespeed}, ${spellblock}, ${attackrange}`);
+                        // document.body.innerHTML +=`<div style="width:400px; height:500px;margin: 5px; padding: 10px; border: 1px solid #000;"><h1>${index+1}. ${id}-${name}</h1><img style="width: 400px" src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg"> <h2>${statsKey[0]}:${hp}<br> ${statsKey[4]}:${movespeed}<br> ${statsKey[7]}:${spellblock}<br> ${statsKey[9]}:${attackrange}</h2></div>`;
+                        // allCardString += getCardString(index, id, name, hp, movespeed, spellblock, attackrange, blurb.substr(0,31), `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`);
+                        container.append(getCardString(index, id, key, name, hp, movespeed, armor, spellblock, attackrange, blurb.substr(0,31), `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`));
+                    });
+                    console.log(allCardString);
+                    // container.innerHTML = allCardString;
+                })
+                .catch(ex => {
+                    console.dir(ex);
+                    console.log(ex.response);
+                    document.body.append(ex.message);
+                });
+        }
+        function getCardString(index, id, key, title, hp, movespeed, armor, spellblock, attackrange, blurb, imgurl){    
+            let cloneCard = cardTemplate.content.cloneNode(true);
+            cloneCard.querySelector("img").src = imgurl;
+            cloneCard.querySelector("h5").innerText = `${index} : ${id} - ${title}`;
+            cloneCard.querySelector(".card-text").innerText = `${blurb}...`;
+
+            // 詳細
+            cloneCard.querySelector(".btn").addEventListener('click', function(){
+                let modal = $g('#exampleModal');
+                modal.querySelector('h5').innerText = `${id} - ${title}`;
+                modal.querySelector('#LolImage').src = imgurl;
+                modal.querySelector('#hp').innerText = `HP:${hp}`;
+                modal.querySelector('#movespeed').innerText = `Move Speed:${movespeed}`;
+                modal.querySelector('#armor').innerText = `Armor:${armor}`;
+                modal.querySelector('#spellblock').innerText = `Spell Block:${spellblock}`;
+                modal.querySelector('#attackrange').innerText = `AttackRange:${attackrange}`;
+            })
+            // 影片
+            cloneCard.querySelector(".btn1").addEventListener('click', function(){
+                let movie = $g('#videoModal');
+                movie.querySelector('h5').innerText = `${id} - ${title}`;
+                movie.querySelector('video').src = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${paddingLeft(key, 4)}/ability_${paddingLeft(key, 4)}_R1.webm`;
+            })
+            return cloneCard;
+        }
+        // 千位不足補0
+        function paddingLeft(str,lenght){
+	        if(str.length >= lenght){
+	            return str;
+            }else{
+	            return paddingLeft("0" +str,lenght);
+            }
+        }
+    </script>
+    
+</body>
+</html>
